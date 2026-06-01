@@ -382,22 +382,22 @@ footer .sign{font-family:var(--font-accent);font-style:italic;font-weight:500;fo
   top:calc(env(safe-area-inset-top) + 52px + 12px);z-index:9500;display:flex;flex-direction:column;align-items:center;
   transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 .mini-ring[hidden]{display:none!important}
-.mini-ring--collapsed{transform:translateX(calc(100% - 32px))}
-.mini-ring__tab{display:none;width:32px;min-height:48px;border:2px solid #FFCB05;border-right:0;border-radius:999px 0 0 999px;
-  background:#00274C;color:#FFCB05;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:.66rem;cursor:pointer;
+.mini-ring--collapsed{transform:translateX(calc(100% - 38px))}
+.mini-ring__tab{display:none;width:38px;min-height:60px;border:2px solid #FFCB05;border-right:0;border-radius:999px 0 0 999px;
+  background:#00274C;color:#FFCB05;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:.74rem;cursor:pointer;
   writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.5px;-webkit-tap-highlight-color:transparent}
 .mini-ring--collapsed .mini-ring__tab{display:flex;align-items:center;justify-content:center}
 .mini-ring--collapsed .mini-ring__face,.mini-ring--collapsed .mini-ring__label{display:none}
-.mini-ring__face{position:relative;width:60px;height:60px;border:none;background:#00274C;border-radius:50%;cursor:pointer;
+.mini-ring__face{position:relative;width:100px;height:100px;border:none;background:#00274C;border-radius:50%;cursor:pointer;
   box-shadow:0 8px 22px rgba(0,39,76,.32);padding:0;-webkit-tap-highlight-color:transparent;
   border:2px solid rgba(255,203,5,.35)}
-.mini-ring__svg{width:60px;height:60px;transform:rotate(-90deg)}
-.mini-ring__track{fill:none;stroke:rgba(255,255,255,.16);stroke-width:4}
-.mini-ring__arc{fill:none;stroke:#FFCB05;stroke-width:4;stroke-linecap:round;
+.mini-ring__svg{width:100px;height:100px;transform:rotate(-90deg)}
+.mini-ring__track{fill:none;stroke:rgba(255,255,255,.16);stroke-width:3.6}
+.mini-ring__arc{fill:none;stroke:#FFCB05;stroke-width:4.2;stroke-linecap:round;
   stroke-dasharray:119.38;stroke-dashoffset:119.38;transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)}
-.mini-ring__num{position:absolute;inset:0;display:grid;place-items:center;color:#FFFDF5;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:.92rem}
-.mini-ring__num i{font-style:normal;font-size:.6rem;opacity:.8;margin-left:1px}
-.mini-ring__label{margin-top:4px;font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;color:#00274C;font-weight:800;
+.mini-ring__num{position:absolute;inset:0;display:grid;place-items:center;color:#FFFDF5;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:1.55rem;line-height:1}
+.mini-ring__num i{font-style:normal;font-size:.85rem;opacity:.8;margin-left:1px}
+.mini-ring__label{margin-top:6px;font-size:.68rem;letter-spacing:1.6px;text-transform:uppercase;color:#00274C;font-weight:800;
   background:#FFCB05;padding:2px 7px;border-radius:999px;box-shadow:0 4px 12px rgba(0,39,76,.2)}
 .mini-ring.pulse .mini-ring__face{animation:miniPulse .5s ease}
 @keyframes miniPulse{0%{transform:scale(1)}45%{transform:scale(1.14);box-shadow:0 0 0 6px rgba(255,203,5,.25)}100%{transform:scale(1)}}
