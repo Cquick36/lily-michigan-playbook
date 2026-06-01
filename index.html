@@ -336,16 +336,12 @@ footer .sign{font-family:var(--font-accent);font-style:italic;font-weight:500;fo
     <button id="installPwaClose" class="scribe-close" type="button" aria-label="Close">×</button>
     <div class="scribe-eyebrow">Hey Lily — did you know?</div>
     <h2 id="scribeTitle">You can keep this as an <span class="mz">app</span> on your phone.</h2>
-    <p class="scribe-sub">Three taps in Safari and the Block M lands on your Home Screen — opens like an app, works offline, saves your checkmarks forever.</p>
-
-    <div id="scribeNotSafari" class="scribe-warn" hidden>
-      First, open this in <strong>Safari</strong>: tap <strong>⋯</strong> or the share icon and choose <strong>Open in Safari</strong>. Then come back and follow the steps.
-    </div>
+    <p class="scribe-sub">Three quick taps and it lands on your Home Screen — opens like an app, works offline, saves your checkmarks forever.</p>
 
     <ol class="scribe-steps">
       <li>
         <span class="scribe-num">1</span>
-        <span class="scribe-do">Tap the <strong>Share</strong> button in Safari</span>
+        <span class="scribe-do">Tap the <strong>Share</strong> button in your browser</span>
         <span class="scribe-glyph" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m8 7 4-4 4 4"/><path d="M5 11v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8"/></svg>
         </span>
@@ -359,7 +355,7 @@ footer .sign{font-family:var(--font-accent);font-style:italic;font-weight:500;fo
       </li>
       <li>
         <span class="scribe-num">3</span>
-        <span class="scribe-do">Tap <strong>Add</strong> — done. Look for the <strong>M</strong>.</span>
+        <span class="scribe-do">Tap <strong>Add</strong> — done. Look for the <strong>Wolverine</strong>.</span>
         <span class="scribe-glyph addword" aria-hidden="true">Add</span>
       </li>
     </ol>
@@ -710,7 +706,6 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
   const btn=document.getElementById("installPwaButton");
   const closeX=document.getElementById("installPwaClose");
   const got=document.getElementById("scribeGot");
-  const notSafari=document.getElementById("scribeNotSafari");
   if(!sheet)return;
   const SEEN_KEY="lily.install.seen.v1";
 
@@ -727,7 +722,6 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
 
   function open(){
     const c=ctx();
-    if(notSafari)notSafari.hidden=!(c.isIOS&&!c.isSafari);
     sheet.hidden=false;
   }
   function close(){sheet.hidden=true;try{localStorage.setItem(SEEN_KEY,"1");}catch(_){}}
