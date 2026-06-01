@@ -866,12 +866,12 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
   got&&got.addEventListener("click",close);
   sheet.addEventListener("click",e=>{if(e.target===sheet)close();});
 
-  // FIRST-OPEN auto popup: show once, never if already installed
+  // EVERY-OPEN auto popup: show the full install overlay on every load (not just first),
+  // unless already running as an installed home-screen app. She taps "Got it" to collapse.
   const c=ctx();
   if(c.standalone){if(dock)dock.hidden=true;return;}
-  let seen=false;try{seen=localStorage.getItem(SEEN_KEY)==="1";}catch(_){}
-  if(dock){dock.hidden=false;setCollapsed(true);}             // pill always available as the re-open
-  if(!seen){setTimeout(open,1100);}    // gentle first-run reveal
+  if(dock){dock.hidden=false;setCollapsed(true);}   // pill exists behind the overlay as the re-open
+  setTimeout(open,900);                              // overlay rises on every open
 })();
 
 </script>
