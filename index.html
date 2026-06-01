@@ -377,6 +377,32 @@ footer .sign{font-family:var(--font-accent);font-style:italic;font-weight:500;fo
 .mavis-intro{max-width:38ch;margin:14px auto 4px;padding:13px 16px;border-left:3px solid var(--maize,#FFCB05);
   background:rgba(255,255,255,.06);border-radius:4px 12px 12px 4px;
   font-family:var(--font-accent,Georgia),serif;font-style:italic;font-size:.96rem;line-height:1.5;color:#E7EDF5;text-align:left}
+</style><style id="miniRingStyle">
+.mini-ring{position:fixed;right:max(10px,env(safe-area-inset-right));
+  top:calc(env(safe-area-inset-top) + 52px + 12px);z-index:9500;display:flex;flex-direction:column;align-items:center;
+  transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+.mini-ring[hidden]{display:none!important}
+.mini-ring--collapsed{transform:translateX(calc(100% - 32px))}
+.mini-ring__tab{display:none;width:32px;min-height:48px;border:2px solid #FFCB05;border-right:0;border-radius:999px 0 0 999px;
+  background:#00274C;color:#FFCB05;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:.66rem;cursor:pointer;
+  writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.5px;-webkit-tap-highlight-color:transparent}
+.mini-ring--collapsed .mini-ring__tab{display:flex;align-items:center;justify-content:center}
+.mini-ring--collapsed .mini-ring__face,.mini-ring--collapsed .mini-ring__label{display:none}
+.mini-ring__face{position:relative;width:60px;height:60px;border:none;background:#00274C;border-radius:50%;cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,39,76,.32);padding:0;-webkit-tap-highlight-color:transparent;
+  border:2px solid rgba(255,203,5,.35)}
+.mini-ring__svg{width:60px;height:60px;transform:rotate(-90deg)}
+.mini-ring__track{fill:none;stroke:rgba(255,255,255,.16);stroke-width:4}
+.mini-ring__arc{fill:none;stroke:#FFCB05;stroke-width:4;stroke-linecap:round;
+  stroke-dasharray:119.38;stroke-dashoffset:119.38;transition:stroke-dashoffset .6s cubic-bezier(.2,.8,.2,1)}
+.mini-ring__num{position:absolute;inset:0;display:grid;place-items:center;color:#FFFDF5;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:.92rem}
+.mini-ring__num i{font-style:normal;font-size:.6rem;opacity:.8;margin-left:1px}
+.mini-ring__label{margin-top:4px;font-size:.58rem;letter-spacing:1.5px;text-transform:uppercase;color:#00274C;font-weight:800;
+  background:#FFCB05;padding:2px 7px;border-radius:999px;box-shadow:0 4px 12px rgba(0,39,76,.2)}
+.mini-ring.pulse .mini-ring__face{animation:miniPulse .5s ease}
+@keyframes miniPulse{0%{transform:scale(1)}45%{transform:scale(1.14);box-shadow:0 0 0 6px rgba(255,203,5,.25)}100%{transform:scale(1)}}
+.mini-ring.done .mini-ring__face{border-color:#FFCB05}
+@media (prefers-reduced-motion:reduce){.mini-ring__arc{transition:none}.mini-ring.pulse .mini-ring__face{animation:none}}
 </style></head>
 <body>
 <header class="mich-topbar" role="banner">
@@ -410,6 +436,18 @@ footer .sign{font-family:var(--font-accent);font-style:italic;font-weight:500;fo
     </div>
   </div>
 </header>
+
+<div id="miniRing" class="mini-ring mini-ring--collapsed" hidden aria-label="Checklist progress">
+  <button id="miniRingTab" class="mini-ring__tab" type="button" aria-label="Show progress"><span id="miniRingTabPct">0%</span></button>
+  <button id="miniRingFace" class="mini-ring__face" type="button" aria-label="Hide progress">
+    <svg viewBox="0 0 44 44" class="mini-ring__svg" aria-hidden="true">
+      <circle class="mini-ring__track" cx="22" cy="22" r="19"/>
+      <circle id="miniRingArc" class="mini-ring__arc" cx="22" cy="22" r="19"/>
+    </svg>
+    <span class="mini-ring__num"><span id="miniRingPct">0</span><i>%</i></span>
+  </button>
+  <div class="mini-ring__label">done</div>
+</div>
 
 <div id="installDock" class="install-dock install-dock--collapsed" hidden>
   <button id="installDockToggle" class="install-dock__tab" type="button" aria-label="Show install button" aria-expanded="false">‹</button>
@@ -694,7 +732,7 @@ function toggleDone(id){
     if(btn)btn.textContent=!was?`✓ Locked in — tap to undo`:`Lock this play in`;
   }
   const pct=ratioPct();
-  animateRing(pct,700);refreshRingCap();
+  animateRing(pct,700);refreshRingCap();updateMiniRing(pct,true);
   if(!was){if(navigator.vibrate)navigator.vibrate(12);if(pct===100)celebrate();}
 }
 
@@ -837,5 +875,49 @@ if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.s
 })();
 
 </script>
-</body>
+<script>
+(()=>{
+  const wrap=document.getElementById("miniRing");
+  if(!wrap)return;
+  const face=document.getElementById("miniRingFace");
+  const tab=document.getElementById("miniRingTab");
+  const arc=document.getElementById("miniRingArc");
+  const pctEl=document.getElementById("miniRingPct");
+  const tabPct=document.getElementById("miniRingTabPct");
+  const label=wrap.querySelector(".mini-ring__label");
+  const CIRC=119.38; // 2*pi*19
+  let lastMilestone=0, userTucked=false;
+
+  function setCollapsed(c){wrap.classList.toggle("mini-ring--collapsed",c);
+    tab&&tab.setAttribute("aria-label",c?"Show progress":"Hide progress");}
+
+  window.updateMiniRing=function(pct,fromTap){
+    if(wrap.hidden)wrap.hidden=false;
+    pct=Math.max(0,Math.min(100,pct||0));
+    arc.style.strokeDashoffset=String(CIRC*(1-pct/100));
+    pctEl.textContent=pct; tabPct.textContent=pct+"%";
+    wrap.classList.toggle("done",pct>=100);
+    if(label)label.textContent=pct>=100?"done!":"done";
+    // milestone pulse at 25/50/75/100
+    const ms=Math.floor(pct/25)*25;
+    if(fromTap && ms>lastMilestone && ms>0){
+      wrap.classList.remove("pulse");void wrap.offsetWidth;wrap.classList.add("pulse");
+      if(navigator.vibrate)navigator.vibrate(pct>=100?[20,40,20]:18);
+    }
+    lastMilestone=ms;
+    // on a tap, briefly pop it open if she'd tucked it, then re-tuck (unless she manually keeps it open)
+    if(fromTap && !userTucked){setCollapsed(false);clearTimeout(window.__mrTO);window.__mrTO=setTimeout(()=>{if(!userTucked)setCollapsed(true);},1600);}
+  };
+
+  face&&face.addEventListener("click",()=>{userTucked=true;setCollapsed(true);});
+  tab&&tab.addEventListener("click",()=>{userTucked=false;setCollapsed(false);});
+
+  // reveal once she scrolls into the checklist; start collapsed showing the % tab
+  function initMini(){const pct=(typeof ratioPct==="function")?ratioPct():0;wrap.hidden=false;updateMiniRing(pct,false);setCollapsed(true);}
+  let shown=false;
+  window.addEventListener("scroll",()=>{if(!shown && window.scrollY>320){shown=true;initMini();}},{passive:true});
+  // also init after load in case page is short
+  window.addEventListener("load",()=>{setTimeout(()=>{if(!shown && document.body.scrollHeight>1200){/*wait for scroll*/}},100);});
+})();
+</script></body>
 </html>
